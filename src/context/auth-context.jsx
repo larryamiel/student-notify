@@ -13,6 +13,7 @@ const AuthProvider = ({ children }) => {
     const [isAuth, setIsAuth] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
+    const [role, setRole] = useState(null);
     
     useEffect(() => {
         setIsLoading(true);
