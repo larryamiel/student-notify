@@ -7,47 +7,47 @@ import {
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
-import useStudent from "@/hooks/use-student";
-import StudentItem from "@/components/student/student-item";
-import StudentAdd from "@/components/student/student-add";
-import StudentEdit from "@/components/student/student-edit";
-import StudentDelete from "@/components/student/student-delete";
+import useAdministrator from "@/hooks/use-administrator";
+import AdministratorItem from "@/components/administrator/administrator-item";
+import AdministratorAdd from "@/components/administrator/administrator-add";
+import AdministratorEdit from "@/components/administrator/administrator-edit";
+import AdministratorDelete from "@/components/administrator/administrator-delete";
 
 
-export function Students() {
+export function Administrators() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedAdministrator, setSelectedAdministrator] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [students, setStudents] = useState([]);
+  const [administrators, setAdministrators] = useState([]);
   const [search, setSearch] = useState('');
 
   const { user } = useAuth();
-  const { getStudents, updateStudent, deleteStudent } = useStudent();
+  const { getAdministrators, updateAdministrator, deleteAdministrator } = useAdministrator();
   
-  const refetchStudents = async () => {
+  const refetchAdministrators = async () => {
     setIsLoading(true);
-    const students = await getStudents(user.department, search);
-    if (students) setStudents(students);
+    const administrators = await getAdministrators(user.department, search);
+    if (administrators) setAdministrators(administrators);
     setIsLoading(false);
   }
 
-  const handleStudentEdit = async (values) => {
+  const handleAdministratorEdit = async (values) => {
     try {
-      await updateStudent(selectedStudent.id, values);
-      refetchStudents();
+      await updateAdministrator(selectedAdministrator.id, values);
+      refetchAdministrators();
       setOpenEdit(false);
     } catch (err) {
       console.log(err);
     }
   }
 
-  const handleStudentDelete = async () => {
+  const handleAdministratorDelete = async () => {
     try {
-      await deleteStudent(selectedStudent.id);
-      refetchStudents();
+      await deleteAdministrator(selectedAdministrator.id);
+      refetchAdministrators();
       setOpenDelete(false);
     } catch (err) {
       console.log(err);
@@ -55,17 +55,17 @@ export function Students() {
   }
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchAdministrators = async () => {
       setIsLoading(true);
-      const students = await getStudents(user.department, search);
-      if (students) setStudents(students);
+      const administrators = await getAdministrators(user.department, search);
+      if (administrators) setAdministrators(administrators);
       setIsLoading(false);
     };
 
-    fetchStudents();
+    fetchAdministrators();
   }, [user, search]);
 
-  const renderStudents = () => {
+  const renderAdministrators = () => {
     if (isLoading) {
       return (
         <tr>
@@ -78,34 +78,34 @@ export function Students() {
       );
     }
 
-    if (!students || students.length === 0) {
+    if (!administrators || administrators.length === 0) {
       return (
         <tr>
           <td colSpan={5} className="text-center py-5">
             <Typography className="font-bold">
-              No students found
+              No administrators found
             </Typography>
           </td>
         </tr>
       );
     }
 
-    return students.map((student, index) => {
+    return administrators.map((administrator, index) => {
       const className = `py-3 px-5 ${
-        index === students.length - 1 ? "" : "border-b border-blue-gray-50"
+        index === administrators.length - 1 ? "" : "border-b border-blue-gray-50"
       }`;
 
       return (
-        <StudentItem
-          key={student.id}
-          student={student}
+        <AdministratorItem
+          key={administrator.id}
+          administrator={administrator}
           className={className}
           onEdit={() => {
-            setSelectedStudent(student);
+            setSelectedAdministrator(administrator);
             setOpenEdit(true);
           }}
           onDelete={() => {
-            setSelectedStudent(student);
+            setSelectedAdministrator(administrator);
             setOpenDelete(true);
           }}
         />
@@ -119,7 +119,7 @@ export function Students() {
         <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
           <div className="flex flex-row justify-between items-center gap-4">
             <Typography variant="h6" color="white">
-              Students Table
+              Administrators Table
             </Typography>
 
             <Button
@@ -135,7 +135,7 @@ export function Students() {
           <table className="w-full min-w-[640px] table-auto">
             <thead>
               <tr>
-                {["student id", "name", "department", "year", ""].map((el) => (
+                {["name", "department", "email", ""].map((el) => (
                   <th
                     key={el}
                     className="border-b border-blue-gray-50 py-3 px-5 text-left"
@@ -151,32 +151,32 @@ export function Students() {
               </tr>
             </thead>
             <tbody>
-              {renderStudents()}
+              {renderAdministrators()}
             </tbody>
           </table>
         </CardBody>
       </Card>
 
-      <StudentEdit
-        student={selectedStudent}
+      <AdministratorEdit
+        administrator={selectedAdministrator}
         open={openEdit}
         setOpen={setOpenEdit}
         toggle={() => setOpenEdit((open) => !open)}
-        onSuccess={handleStudentEdit}
+        onSuccess={handleAdministratorEdit}
       />
 
-      <StudentDelete
+      <AdministratorDelete
         open={openDelete}
-        onConfirm={handleStudentDelete}
+        onConfirm={handleAdministratorDelete}
         onCancel={() => setOpenDelete(false)}
         toggle={() => setOpenDelete((open) => !open)}
       />
 
-      <StudentAdd
+      <AdministratorAdd
         open={openAdd}
         toggle={() => setOpenAdd((open) => !open)}
         onSuccess={() => {
-          refetchStudents();
+          refetchAdministrators();
           setOpenAdd(false);
         }}
       />
@@ -184,4 +184,4 @@ export function Students() {
   );
 }
 
-export default Students;
+export default Administrators;

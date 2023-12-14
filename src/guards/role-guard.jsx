@@ -1,9 +1,8 @@
 import { useAuth } from '@/context/auth-context'
 import React from 'react'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 export default function RoleGuard ({ redirect = false, role = null, children }) {
-  const role = props.role;
   const { isAuth, user } = useAuth()
 
   if (!role) {
@@ -13,18 +12,27 @@ export default function RoleGuard ({ redirect = false, role = null, children }) 
   // if not auth then redirect to sign in
   if (!isAuth) {
     if (redirect) {
-      return <Redirect to="/sign-in" />
+      return <Navigate to="/sign-in" />
     }
     return <></>;
   }
 
   // if not admin then redirect to dashboard
-  if (user.role !== role) {
-    if (redirect) {
-      return <Redirect to="/home" />
+  if (Array.isArray(role)) {
+    if (!role.includes(user.role)) {
+      if (redirect) {
+        return <Navigate to="/home" />
+      }
+      return <></>;
     }
-    return <></>;
+  } else {
+    if (user.role !== role) {
+      if (redirect) {
+        return <Navigate to="/home" />
+      }
+      return <></>;
+    }
   }
-
+  
   return <>{children}</>
 } 

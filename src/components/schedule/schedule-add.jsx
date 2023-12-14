@@ -1,34 +1,91 @@
-import useStudent from '@/hooks/use-student';
+import useSchedule from '@/hooks/use-schedule';
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Typography } from '@material-tailwind/react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import React, { useState } from 'react'
 import { departments } from '@/data/departments';
+import DateTimePicker from 'react-datetime-picker';
+import DatePicker from '../datepicker';
 import { useAuth } from '@/context/auth-context';
 
-export default function StudentAdd ({ open, toggle, onSuccess }) {
+// times in 30 minutes interval
+const times = [
+  "00:00", "00:30",
+  "01:00", "01:30",
+  "02:00", "02:30",
+  "03:00", "03:30",
+  "04:00", "04:30",
+  "05:00", "05:30",
+  "06:00", "06:30",
+  "07:00", "07:30",
+  "08:00", "08:30",
+  "09:00", "09:30",
+  "10:00", "10:30",
+  "11:00", "11:30",
+  "12:00", "12:30",
+  "13:00", "13:30",
+  "14:00", "14:30",
+  "15:00", "15:30",
+  "16:00", "16:30",
+  "17:00", "17:30",
+  "18:00", "18:30",
+  "19:00", "19:30",
+  "20:00", "20:30",
+  "21:00", "21:30",
+  "22:00", "22:30",
+  "23:00", "23:30",
+];
+
+export default function ScheduleAdd ({ open, toggle, onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { addStudent } = useStudent();
+  const { addSchedule } = useSchedule();
+
   const { user } = useAuth();
 
   const fields = [
     {
-      name: "student_id",
-      label: "Student ID",
-      placeholder: "Student ID",
+      name: "label",
+      label: "Label",
+      placeholder: "Label",
       type: "text",
     },
     {
-      name: "name",
-      label: "Name",
+      name: "description",
+      label: "Description",
+      placeholder: "Description",
+      type: "text",
+    },
+    {
+      name: "from",
+      label: "From",
+      placeholder: "From",
+      type: "datetime",
+    },
+    {
+      name: "from-time",
+      label: "From Time",
+      placeholder: "From Time",
+      type: "select",
+      options: times.map((time) => ({
+        label: time,
+        value: time,
+      }))
+    },
+    {
+      name: "to",
+      label: "To",
       placeholder: "Name",
-      type: "text",
+      type: "datetime",
     },
     {
-      name: "number",
-      label: "Number",
-      placeholder: "Phone Number",
-      type: "text",
+      name: "to-time",
+      label: "To Time",
+      placeholder: "To Time",
+      type: "select",
+      options: times.map((time) => ({
+        label: time,
+        value: time,
+      }))
     },
     {
       name: "department",
@@ -41,52 +98,22 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
       })),
       readonly: typeof user.department == 'string',
     },
-    {
-      name: "year",
-      label: "Year",
-      placeholder: "Year",
-      type: "select",
-      options: [
-        {
-          label: "First",
-          value: "First",
-        },
-        {
-          label: "Second",
-          value: "Second",
-        },
-        {
-          label: "Third",
-          value: "Third",
-        },
-        {
-          label: "Fourth",
-          value: "Fourth",
-        },
-        {
-          label: "Fifth",
-          value: "Fifth",
-        },
-        {
-          label: "Other",
-          value: "Other",
-        }
-      ]
-    },
   ];
 
   const validationSchema = Yup.object().shape({
-    student_id: Yup.string().required().min(6),
-    name: Yup.string().required(),
-    number: Yup.string().required(),
-    department: Yup.string().required(),
-    year: Yup.string().required(),
+    label: Yup.string().required('Label is required'),
+    description: Yup.string().required('Description is required'),
+    from: Yup.date().required('From is required'),
+    'from-time': Yup.string().required('From Time is required'), // 'from-time' is a hack to make formik work with 'from-time' and 'to-time
+    to: Yup.date().required('To is required'),
+    'to-time': Yup.string().required('To Time is required'), // 'to-time' is a hack to make formik work with 'from-time' and 'to-time
+    department: Yup.string().required('Department is required'),
   });
   
   const handleSubmit = async (values) => {
     setIsLoading(true);
     try {
-      await addStudent(values);
+      await addSchedule(values);
       if (onSuccess) onSuccess();
     } catch (error) {
       console.log(error);
@@ -99,18 +126,20 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
       <Formik
         validationSchema={validationSchema}
         initialValues={{
-          student_id: '',
-          number: '',
-          name: '',
+          label: '',
+          description: '',
+          from: new Date(),
+          'from-time': '00:00',
+          to: new Date(),
+          'to-time': '00:00',
           department: user.department,
-          year: '',
         }}
         onSubmit={handleSubmit}
       >
         {(props) => {
           return (
             <form onSubmit={props.handleSubmit} className="mx-auto flex flex-col gap-4">
-              <DialogHeader>Add Student</DialogHeader>
+              <DialogHeader>Add Schedule</DialogHeader>
               
               <DialogBody>
                 <div className="mb-1 flex flex-col gap-2">   
@@ -174,6 +203,20 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
                           </div>
                         </div>
                       )
+                    } else if (field.type === 'datetime') {
+                      return (
+                        <div className="flex flex-col gap-2" key={field.label}>
+                          <Typography variant="small" color="blue-gray" className="font-medium">
+                            {field.label}
+                          </Typography>
+                          <DatePicker props={props} field={field} key={field.name} />
+                          <div>
+                            <Typography variant="paragraph" color="red" className="text-sm font-medium">
+                              {props.errors[field.name] && props.touched[field.name] ? props.errors[field.name] : ""}
+                            </Typography>
+                          </div>
+                        </div>
+                      )
                     }
 
                     return <></>;
@@ -196,7 +239,7 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
                   size="lg"
                   disabled={isLoading}
                 >
-                  Add Student
+                  Add Schedule
                 </Button>
               </DialogFooter>
             </form>

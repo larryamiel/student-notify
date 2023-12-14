@@ -1,36 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import {
-  ChartPieIcon,
-  UserIcon,
-  UserPlusIcon,
-  ArrowRightOnRectangleIcon,
-} from "@heroicons/react/24/solid";
-import { Navbar, Footer } from "@/widgets/layout";
 import routes from "@/routes";
 
 export function Auth() {
-  const navbarRoutes = [
-    {
-      name: "dashboard",
-      path: "/dashboard/home",
-      icon: ChartPieIcon,
-    },
-    {
-      name: "profile",
-      path: "/dashboard/home",
-      icon: UserIcon,
-    },
-    {
-      name: "sign up",
-      path: "/auth/sign-up",
-      icon: UserPlusIcon,
-    },
-    {
-      name: "sign in",
-      path: "/auth/sign-in",
-      icon: ArrowRightOnRectangleIcon,
-    },
-  ];
 
   return (
     <div className="relative min-h-screen w-full">
@@ -38,17 +9,28 @@ export function Auth() {
         {routes.map(
           ({ layout, pages }) =>
             layout === "auth" &&
-            pages.map(({ path, element, guard: Guard }) => (
-              <Route
-                exact
-                path={path}
-                element={
-                  <Guard>
-                    {element}
-                  </Guard>
-                }
-              />
-            ))
+            pages.map(({ path, element, guard }) => {
+              let Guard = null;
+              let guardProps = null;
+              if (guard) {
+                Guard = guard.Guard;
+                guardProps = guard.props;
+              }
+
+              return (
+                <Route
+                  exact
+                  path={path}
+                  element={
+                    guard ? (
+                      <Guard {...guardProps} redirect={true}>{element}</Guard>
+                    ) : (
+                      element
+                    )
+                  }
+                />
+              )
+            })
         )}
       </Routes>
     </div>

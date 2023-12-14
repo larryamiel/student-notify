@@ -1,24 +1,18 @@
 import { departments } from '@/data/departments';
-import useStudent from '@/hooks/use-student';
 import { Avatar, Button, Typography } from '@material-tailwind/react';
-import React, { useState } from 'react'
+import React from 'react'
 
-export default function StudentItem({ student, className, onEdit, onDelete }) {
-  const defaultStudentImage = 'https://tleliteracy.com/wp-content/uploads/2017/02/default-avatar.png';  
+export default function AdministratorItem({ administrator, className, onEdit, onDelete }) {
+  const defaultAdministratorImage = 'https://tleliteracy.com/wp-content/uploads/2017/02/default-avatar.png';  
 
   return (
     <>
-      <tr key={student.id}>
-        <td className={className}>
-          <Typography className="text-xs font-semibold text-blue-gray-600">
-            {student.student_id}
-          </Typography>
-        </td>
+      <tr key={administrator.id}>
         <td className={className}>
           <div className="flex items-center gap-4">
             <Avatar
-              src={student.image ? student.image : defaultStudentImage}
-              alt={student.name}
+              src={administrator.image ? administrator.image : defaultAdministratorImage}
+              alt={administrator.name}
               size="sm"
               variant="rounded"
             />
@@ -28,19 +22,19 @@ export default function StudentItem({ student, className, onEdit, onDelete }) {
                 color="blue-gray"
                 className="font-semibold"
               >
-                {student.name}
+                {administrator.name}
               </Typography>
             </div>
           </div>
         </td>
         <td className={className}>
           <Typography className="text-xs font-semibold text-blue-gray-600">
-            {departments[student.department] ? departments[student.department].name : ''}
+            {departments[administrator.department] ? departments[administrator.department].name : ''}
           </Typography>
         </td>
         <td className={className}>
           <Typography className="text-xs font-semibold text-blue-gray-600">
-            {student.year}
+            {administrator.email}
           </Typography>
         </td>
         <td className={className}>

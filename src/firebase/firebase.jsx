@@ -16,8 +16,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// auth
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+
+// auth
 const auth = getAuth();
 
 export { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword };
@@ -27,3 +28,11 @@ import { getFirestore } from "firebase/firestore";
 const db = getFirestore();
 
 export { db };
+
+// functions
+import { getFunctions, httpsCallable } from "firebase/functions";
+const functions = getFunctions();
+
+const sendScheduleMessage = httpsCallable(functions, 'sendScheduleMessage');
+
+export { functions, sendScheduleMessage };

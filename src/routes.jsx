@@ -1,15 +1,20 @@
 import {
   HomeIcon,
-  UserCircleIcon,
-  TableCellsIcon,
-  InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
+  UserGroupIcon,
+  UserCircleIcon,
+  ChatBubbleLeftIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
+import { Home } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import GuestGuard from "./guards/guest-guard";
 import Students from "./pages/dashboard/student/students";
+import Administrators from "./pages/dashboard/administrator/administrators";
+import RoleGuard from "./guards/role-guard";
+import Messages from "./pages/dashboard/message/messages";
+import Schedules from "./pages/dashboard/schedule/schedules";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -26,29 +31,50 @@ export const routes = [
         element: <Home />,
       },
       {
-        icon: <UserCircleIcon {...icon} />,
-        name: "profile",
-        path: "/profile",
-        element: <Profile />,
+        icon: <CalendarDaysIcon {...icon} />,
+        name: "schedule",
+        path: "/schedule",
+        element: <Schedules />,
       },
+      // {
+      //   icon: <ChatBubbleLeftIcon {...icon} />,
+      //   name: "messages",
+      //   path: "/messages",
+      //   element: <Messages />,
+      //   guard: {
+      //     Guard: RoleGuard,
+      //     props: {
+      //       redirect: false,
+      //       role: ['student', 'administrator']
+      //     },
+      //   }
+      // },
       {
-        icon: <ServerStackIcon {...icon} />,
+        icon: <UserGroupIcon {...icon} />,
         name: "students",
         path: "/students",
         element: <Students />,
+        guard: {
+          Guard: RoleGuard,
+          props: {
+            redirect: false,
+            role: ['super', 'administrator']
+          },
+        }
       },
       {
-        icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: <Tables />,
-      },
-      {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
-        path: "/notifications",
-        element: <Notifications />,
-      },
+        icon : <UserCircleIcon {...icon} />,
+        name: "administrators",
+        path: "/administrators",
+        element: <Administrators />,
+        guard: {
+          Guard: RoleGuard,
+          props: {
+            redirect: false,
+            role: 'super'
+          },
+        }
+      }
     ],
   },
   {
@@ -60,14 +86,24 @@ export const routes = [
         name: "sign in",
         path: "/sign-in",
         element: <SignIn />,
-        guard: GuestGuard
+        guard: {
+          Guard: GuestGuard,
+          props: {
+            redirect: false,
+          },
+        }
       },
       {
         icon: <RectangleStackIcon {...icon} />,
         name: "sign up",
         path: "/sign-up",
         element: <SignUp />,
-        guard: GuestGuard
+        guard: {
+          Guard: GuestGuard,
+          props: {
+            redirect: false,
+          },
+        }
       },
     ],
   },

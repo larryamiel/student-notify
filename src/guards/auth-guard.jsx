@@ -5,8 +5,6 @@ import { Navigate } from 'react-router-dom'
 export default function AuthGuard({ redirect = true, children }) {
   const { isAuth } = useAuth();
 
-  console.log('AuthGuard', isAuth);
-
   // if not auth then redirect to sign in
   if (!isAuth) {
     if (redirect) {

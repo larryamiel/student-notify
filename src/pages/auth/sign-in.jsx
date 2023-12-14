@@ -11,13 +11,13 @@ export function SignIn() {
   const { login } = useAuth();
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string().required().email(),
+    username: Yup.string().required().min(3),
     password: Yup.string().required().min(6),
   });
 
   const handleSubmit = (values) => {
     try {
-      login(values.email, values.password);
+      login(values.username, values.password);
     } catch (error) {
       console.log(error);
     }
@@ -28,11 +28,11 @@ export function SignIn() {
       <div className="w-full lg:w-3/5 mt-24">
         <div className="text-center">
           <Typography variant="h2" className="font-bold mb-4">Sign In</Typography>
-          <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your Student ID and password to Sign In.</Typography>
+          <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your Student ID / Email and password to Sign In.</Typography>
         </div>
         <Formik
           initialValues={{
-            email: "",
+            username: "",
             password: "",
           }}
           validationSchema={validationSchema}
@@ -43,24 +43,24 @@ export function SignIn() {
               <div className="mb-1 flex flex-col gap-6">   
                 <div className="flex flex-col gap-2">
                   <Typography variant="small" color="blue-gray" className="font-medium">
-                    Your Student ID
+                    Your Student ID / Email
                   </Typography>
                   <Input
                     size="lg"
-                    name="email"
+                    name="username"
                     placeholder="name@mail.com"
                     className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
                     labelProps={{
                       className: "before:content-none after:content-none",
                     }}
                     onBlur={props.handleBlur}
-                    value={props.values.email}
-                    error={props.touched.email && props.errors.email !== undefined}
+                    value={props.values.username}
+                    error={props.touched.username && props.errors.username !== undefined}
                     onChange={props.handleChange}
                   />
                   <div>
                     <Typography variant="paragraph" color="red" className="text-sm font-medium">
-                      {props.errors.email && props.touched.email ? props.errors.email : ""}
+                      {props.errors.username && props.touched.username ? props.errors.username : ""}
                     </Typography>
                   </div>
                 </div>

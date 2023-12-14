@@ -1,14 +1,11 @@
-import useStudent from '@/hooks/use-student';
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Typography } from '@material-tailwind/react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
-import React, { useState } from 'react'
+import React from 'react'
 import { departments } from '@/data/departments';
 import { useAuth } from '@/context/auth-context';
 
-export default function StudentAdd ({ open, toggle, onSuccess }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const { addStudent } = useStudent();
+export default function StudentEdit ({ student, open, toggle, onSuccess }) {
   const { user } = useAuth();
 
   const fields = [
@@ -83,34 +80,33 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
     year: Yup.string().required(),
   });
   
-  const handleSubmit = async (values) => {
-    setIsLoading(true);
+  const handleSubmit = (values) => {
     try {
-      await addStudent(values);
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(values);
     } catch (error) {
       console.log(error);
     }
-    setIsLoading(false);
   }
+
+  if (!student) return <></>;
 
   return (
     <Dialog size="sm" open={open} handler={toggle}>
       <Formik
         validationSchema={validationSchema}
         initialValues={{
-          student_id: '',
-          number: '',
-          name: '',
-          department: user.department,
-          year: '',
+          student_id: student.student_id,
+          name: student.name,
+          number: student.number,
+          department: student.department,
+          year: student.year,
         }}
         onSubmit={handleSubmit}
       >
         {(props) => {
           return (
             <form onSubmit={props.handleSubmit} className="mx-auto flex flex-col gap-4">
-              <DialogHeader>Add Student</DialogHeader>
+              <DialogHeader>Edit Student</DialogHeader>
               
               <DialogBody>
                 <div className="mb-1 flex flex-col gap-2">   
@@ -194,9 +190,8 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
                   type="submit"
                   color="light-blue"
                   size="lg"
-                  disabled={isLoading}
                 >
-                  Add Student
+                  Update
                 </Button>
               </DialogFooter>
             </form>

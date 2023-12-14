@@ -1,33 +1,19 @@
-import useStudent from '@/hooks/use-student';
+import useAdministrator from '@/hooks/use-administrator';
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Input, Option, Select, Typography } from '@material-tailwind/react'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
 import React, { useState } from 'react'
 import { departments } from '@/data/departments';
-import { useAuth } from '@/context/auth-context';
 
-export default function StudentAdd ({ open, toggle, onSuccess }) {
+export default function AdministratorAdd ({ open, toggle, onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { addStudent } = useStudent();
-  const { user } = useAuth();
+  const { addAdministrator } = useAdministrator();
 
   const fields = [
-    {
-      name: "student_id",
-      label: "Student ID",
-      placeholder: "Student ID",
-      type: "text",
-    },
     {
       name: "name",
       label: "Name",
       placeholder: "Name",
-      type: "text",
-    },
-    {
-      name: "number",
-      label: "Number",
-      placeholder: "Phone Number",
       type: "text",
     },
     {
@@ -38,55 +24,26 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
       options: departments.map((department) => ({
         label: department.name,
         value: department.id,
-      })),
-      readonly: typeof user.department == 'string',
+      }))
     },
     {
-      name: "year",
-      label: "Year",
-      placeholder: "Year",
-      type: "select",
-      options: [
-        {
-          label: "First",
-          value: "First",
-        },
-        {
-          label: "Second",
-          value: "Second",
-        },
-        {
-          label: "Third",
-          value: "Third",
-        },
-        {
-          label: "Fourth",
-          value: "Fourth",
-        },
-        {
-          label: "Fifth",
-          value: "Fifth",
-        },
-        {
-          label: "Other",
-          value: "Other",
-        }
-      ]
-    },
+      name: "email",
+      label: "Email",
+      placeholder: "Email",
+      type: "text",
+    }
   ];
 
   const validationSchema = Yup.object().shape({
-    student_id: Yup.string().required().min(6),
     name: Yup.string().required(),
-    number: Yup.string().required(),
     department: Yup.string().required(),
-    year: Yup.string().required(),
+    email: Yup.string().email().required(),
   });
   
   const handleSubmit = async (values) => {
     setIsLoading(true);
     try {
-      await addStudent(values);
+      await addAdministrator(values);
       if (onSuccess) onSuccess();
     } catch (error) {
       console.log(error);
@@ -99,18 +56,16 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
       <Formik
         validationSchema={validationSchema}
         initialValues={{
-          student_id: '',
-          number: '',
           name: '',
-          department: user.department,
-          year: '',
+          department: '',
+          email: '',
         }}
         onSubmit={handleSubmit}
       >
         {(props) => {
           return (
             <form onSubmit={props.handleSubmit} className="mx-auto flex flex-col gap-4">
-              <DialogHeader>Add Student</DialogHeader>
+              <DialogHeader>Add Administrator</DialogHeader>
               
               <DialogBody>
                 <div className="mb-1 flex flex-col gap-2">   
@@ -159,7 +114,6 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
                             value={props.values[field.name]}
                             error={props.touched[field.name] && props.errors[field.name] !== undefined}
                             onChange={(value) => props.setFieldValue(field.name, value)}
-                            disabled={field.readonly}
                           >
                             {field.options.map((option) => (
                               <Option value={option.value} key={option.value}>
@@ -196,7 +150,7 @@ export default function StudentAdd ({ open, toggle, onSuccess }) {
                   size="lg"
                   disabled={isLoading}
                 >
-                  Add Student
+                  Add Administrator
                 </Button>
               </DialogFooter>
             </form>
