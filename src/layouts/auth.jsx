@@ -38,8 +38,16 @@ export function Auth() {
         {routes.map(
           ({ layout, pages }) =>
             layout === "auth" &&
-            pages.map(({ path, element }) => (
-              <Route exact path={path} element={element} />
+            pages.map(({ path, element, guard: Guard }) => (
+              <Route
+                exact
+                path={path}
+                element={
+                  <Guard>
+                    {element}
+                  </Guard>
+                }
+              />
             ))
         )}
       </Routes>

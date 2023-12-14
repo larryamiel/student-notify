@@ -8,6 +8,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
+import GuestGuard from "./guards/guest-guard";
+import Students from "./pages/dashboard/student/students";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -28,6 +30,12 @@ export const routes = [
         name: "profile",
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        icon: <ServerStackIcon {...icon} />,
+        name: "students",
+        path: "/students",
+        element: <Students />,
       },
       {
         icon: <TableCellsIcon {...icon} />,
@@ -52,12 +60,14 @@ export const routes = [
         name: "sign in",
         path: "/sign-in",
         element: <SignIn />,
+        guard: GuestGuard
       },
       {
         icon: <RectangleStackIcon {...icon} />,
         name: "sign up",
         path: "/sign-up",
         element: <SignUp />,
+        guard: GuestGuard
       },
     ],
   },
